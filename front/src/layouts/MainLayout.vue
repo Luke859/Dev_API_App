@@ -5,7 +5,7 @@
         <q-toolbar-title>
           Quasar App
         </q-toolbar-title>
-        <Router-link to="/logIn">
+        <Router-link to="/login">
           Se connecter
         </Router-link>
         <q-btn outline label="S'incrire" color="primary" no-caps class="q-mx-md" to="/register"/>
