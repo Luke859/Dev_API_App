@@ -28,7 +28,9 @@ export async function register (ctx) {
  try {
   const registerValidationSchema = Joi.object({
     email: Joi.string().email().required(),
-    password: Joi.string().min(6).required()
+    password: Joi.string().min(6).required(),
+    terms_and_conditions: Joi.boolean().required(),
+
   })
   const params = ctx.request.body
   const { error, value } = registerValidationSchema.validate(params)
@@ -37,6 +39,9 @@ export async function register (ctx) {
   const newUser = new UserModel({
     ...value,
     password: hashedPassword,
+    settings : {
+      terms_and_conditions : value.terms_and_conditions
+    }
   })
   newUser.generateEmailVerificationToken()
   // newUser.generateJWT() 
