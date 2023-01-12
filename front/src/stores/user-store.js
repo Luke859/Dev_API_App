@@ -18,7 +18,7 @@ export const useUserStore = defineStore('user', {
         console.log(params)
         const res = await register(params)
         console.log(res)
-        LocalStorage.set('token', res.data.token)
+        LocalStorage.set('token', res.data.message)
       } catch (e) {
         LocalStorage.clear()
         throw new Error(e)
@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', {
     async handleLogin (params) {
       try {
         const res = await login(params)
-        LocalStorage.set('token', res.data.token)
+        LocalStorage.set('token', res.data.message)
       } catch (e) {
         LocalStorage.clear()
         throw new Error(e)
