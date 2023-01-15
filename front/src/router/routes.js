@@ -23,7 +23,8 @@ const routes = [
     path: '/dashboard',
     component: () => import('layouts/DashboardLayout.vue'),
     children: [
-      { path: '', name: 'dashboard', component: () => import('src/components/Dashboard/dashboardPage.vue') }
+      { path: '', name: 'dashboard', component: () => import('src/components/Dashboard/dashboardPage.vue') },
+      { path: 'tasks', name: 'tasks', component: () => import('src/components/Tasks/TasksPage.vue') }
     ],
     beforeEnter: isAuthenticated
   },
