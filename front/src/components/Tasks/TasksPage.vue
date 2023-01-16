@@ -2,36 +2,46 @@
 <template>
     <q-page class="flex">
         <div class="home">
-            <div class="right-block" style="align-items: center; width: auto">
+            <div class="right-block" style="align-items: center, width: auto, margin-top: 100px">
                 <div class="row" style="align-items: center ">
                     <q-btn color="grey" style="border: black 1px solid" round flat icon="arrow_back_ios_new" to="/Dashboard" >
                     </q-btn>
                     <div class="text-h2" style="padding-left: 20px" >{{ oneList.title }}</div>
                 </div>
-                <q-btn style="border: black 1px solid" color="purple" icon="add" label="Ajouter une tâche">
+                <q-btn color="purple" icon="add" style="margin-top: 40px" label="Ajouter une tâche">
                     <q-menu>
                         <q-item clickable>
                             <form className="form" @submit.prevent="addnewTask(route.params.id)">
-                                <q-input v-model="newTask" clearable filled label="Add" />
-                                <q-btn type="submit" class="btn btn-block"> Add new task </q-btn>
+                                <q-input v-model="newTask" clearable filled label="Task" style="margin-top: 5px"/>
+                                <q-input v-model="newDescriptionTask" clearable filled label="Decription" style="margin-top: 5px"/>
+                                <q-btn type="submit" class="btn btn-block" style="margin-top: 5px"> Add new task </q-btn>
                             </form>
                         </q-item>
                     </q-menu>
                 </q-btn>
                 <div v-if="loading">
-                    <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" />
+                    <q-circular-progress indeterminate rounded size="50px" color="purple" class="q-ma-md" />
                 </div>
                 <div v-else>
-                    <table style="width:100%">
+                    <div class="q-pa-md row items-center q-gutter-md">
                         <div class="cursor-pointer">
+                            <h1>Tâches - </h1>
                             <div v-for="tasks_all in tasks" :key="tasks_all._id">
-                                <q-card flat bordered class="my-card bg-grey-1">
+                                <div v-if="tasks_all.done">
+                                    <h1>Tâches complétées - </h1>
+                                </div>
+                                <div v-else>
+                                </div>
+                                <q-card flat bordered class="my-card bg-grey-1" style="margin-top: 20px" >
                                     <q-card-section class="bg-lightgrey">
                                         <div class="row items-center no-wrap">
+                                            <div class="q-gutter-sm">
+                                                <q-checkbox v-model="tasks_all.done" color="purple" @click="sendData(tasks_all._id, tasks_all)" />
+                                            </div>
                                             <div class="col">
                                                 <!-- <div class="text-h6">{{ list_all._id }}</div> -->
-                                                <div class="text-h6">{{ tasks_all.title }}</div>
-                                                <!-- <div class="text-subtitle2"></div> -->
+                                                <div class="text-h5" style="color: black">{{ tasks_all.title }}</div>
+                                                <div class="text-h7" style="color: grey">{{ tasks_all.description }}</div>
                                             </div>
 
                                             <div class="col-auto">
@@ -56,7 +66,7 @@
                                                             <q-item-section>
                                                                 <form className="form"
                                                                     @submit.prevent="deleteCurrentTask(tasks_all._id)">
-                                                                    <q-btn type="submit"
+                                                                    <q-btn type="submit" style="color: red"
                                                                         class="btn btn-block">Supprimer</q-btn>
                                                                 </form>
                                                             </q-item-section>
@@ -69,7 +79,7 @@
                                 </q-card>
                             </div>
                         </div>
-                    </table>
+                    </div>
                 </div>
             </div>
             <div class="left-block">
@@ -86,7 +96,7 @@
                     </q-btn>
                 </h3>
                 <div v-if="loading">
-                    <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" />
+                    <q-circular-progress indeterminate rounded size="50px" color="purple" class="q-ma-md" />
                 </div>
                 <div v-else>
                     <table style="width:100%">
@@ -114,18 +124,36 @@ const loading = ref(false)
 // const users = ref([])
 const tasks = ref([])
 const newTask = ref('')
+const newDescriptionTask = ref('')
 const modTask = ref('')
 const lists = ref([])
 const oneList = ref('')
 const newList = ref('')
 
+const loadTask = async () => {
+  const res = await getTasksByList(route.params.id)
+  tasks.value = res.data
+}
+
+const sendData = async (getTaskId, tasksAll) => {
+  const modifyCheckbox = {
+    done: tasksAll.done
+  }
+  console.log('HELLLO')
+  const response = await modifyTask(getTaskId, modifyCheckbox)
+  loadTask()
+  console.log(response)
+}
+
 const addnewTask = async (getListId) => {
   const taskForm = {
     list: getListId,
-    title: newTask.value
+    title: newTask.value,
+    description: newDescriptionTask.value
   }
-  const response = await addTask(taskForm)
+  loadTask()
   window.location.reload()
+  const response = await addTask(taskForm)
   console.log(response)
 }
 
@@ -134,12 +162,14 @@ const modifyCurrentTask = async (getTaskId) => {
     title: modTask.value
   }
   const response = await modifyTask(getTaskId, modifyTaskForm)
+  loadTask()
   window.location.reload()
   console.log(response)
 }
 
 const deleteCurrentTask = async (getId) => {
   const response = await deleteTask(getId)
+  loadTask()
   window.location.reload()
   console.log(response)
 }
@@ -147,6 +177,7 @@ const deleteCurrentTask = async (getId) => {
 const addnewList = async () => {
   const listForm = { title: newList.value }
   const response = await addList(listForm)
+  loadTask()
   window.location.reload()
   console.log(response)
 }
@@ -190,6 +221,7 @@ onMounted(async () => {
 
 .right-block {
     grid-area: right;
+    padding: 40px;
     align-content: center;
     background-color: white;
     border-radius: 10px;

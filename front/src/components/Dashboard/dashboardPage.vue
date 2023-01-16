@@ -3,12 +3,12 @@
   <q-page class="flex"  style="min-height: 100px">
     <div class="home">
       <div class="right-block">
+        <h1 style="padding: 70px 20px 20px 0px">Hello, bienvenue !</h1>
+        <h3 style="padding: 0px 20px 40px 0px">Voici les dernières tâches que tu as ajoutés</h3>
         <div v-if="loading">
           <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" />
         </div>
         <div v-else>
-          <h1 style="padding: 70px 20px 20px 0px">Hello, bienvenue !</h1>
-          <h3 style="padding: 0px 20px 40px 0px">Voici les dernières tâches que tu as ajoutés</h3>
             <div class="q-pa-md row items-center q-gutter-md">
               <div v-for="list_all in lists" :key="list_all._id">
                 <q-card flat bordered class="my-card bg-grey-1" >
@@ -58,7 +58,7 @@
           <q-btn style="border: black 1px solid" color="grey-7" round flat icon="add">
             <q-menu>
                 <q-item clickable>
-                  <form className="form" @submit.prevent="addnewList">
+                  <form className="form" required="" @submit.prevent="addnewList">
                     <q-input v-model="newList" clearable filled label="Add" />
                     <q-btn type="submit" class="btn btn-block"> Add new list </q-btn>
                   </form>

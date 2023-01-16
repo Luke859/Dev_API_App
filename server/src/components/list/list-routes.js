@@ -4,7 +4,7 @@ import {isAuthenticated, isAuthenticatedWithUser } from '../../middlewares/jwt-h
 
 const lists = new Router()
 
-lists.get('/', listControllers.index)
+lists.get('/', isAuthenticatedWithUser, listControllers.index)
 lists.get('/:id', isAuthenticated, listControllers.id)
 lists.post('/', isAuthenticatedWithUser, listControllers.create)
 lists.put('/:id', isAuthenticated, listControllers.update)

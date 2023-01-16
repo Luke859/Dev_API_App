@@ -1,12 +1,17 @@
 import ListModel from '#components/list/list-model.js'
 import TaskModel from '#components/task/task-model.js'
 import UserModel from '#components/user/user-model.js'
+import mongoose from 'mongoose';
 
 import Joi from 'Joi'
 
 export async function index (ctx) {
   try {
-    const lists = await ListModel.find({})
+    console.log(ctx.state.user)
+    const lists = await ListModel
+    .aggregate()
+    .match({ creator: mongoose.Types.ObjectId(ctx.state.user._id) })
+    .lookup({ from: 'tasks', localField: '_id', foreignField: 'list', as: 'tasks' })
     ctx.ok(lists)
   } catch (e) {
     ctx.badRequest({ message: e.message })
