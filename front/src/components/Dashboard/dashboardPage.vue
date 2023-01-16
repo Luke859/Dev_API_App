@@ -1,16 +1,17 @@
 <!-- eslint-disable vue/require-v-for-key -->
 <template>
-  <q-page class="flex">
+  <q-page class="flex"  style="min-height: 100px">
     <div class="home">
       <div class="right-block">
         <div v-if="loading">
           <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" />
         </div>
         <div v-else>
-          <table style="width:100%">
-            <div class="cursor-pointer">
+          <h1 style="padding: 70px 20px 20px 0px">Hello, bienvenue !</h1>
+          <h3 style="padding: 0px 20px 40px 0px">Voici les dernières tâches que tu as ajoutés</h3>
+            <div class="q-pa-md row items-center q-gutter-md">
               <div v-for="list_all in lists" :key="list_all._id">
-                <q-card flat bordered class="my-card bg-grey-1">
+                <q-card flat bordered class="my-card bg-grey-1" >
                   <q-card-section class="bg-lightgrey">
                     <div class="row items-center no-wrap">
                       <div class="col">
@@ -45,14 +46,11 @@
                     </div>
                   </q-card-section>
                   <q-card-section class="bg-white" align="left">
-                    <q-btn color="purple" to="/Dashboard/Tasks" >
-                      Voir ma liste
-                    </q-btn>
+                    <q-btn color="purple" @click="redirectToTasks(list_all._id)" label="Voir tasks" class="q-mb-md" />
                   </q-card-section>
                 </q-card>
               </div>
             </div>
-          </table>
         </div>
       </div>
       <div class="left-block">
@@ -89,12 +87,18 @@ import { ref, onMounted } from 'vue'
 // import { getUserProfile } from 'src/services/users'
 import { Notify } from 'quasar'
 import { getAllLists, addList, modifyList, deleteList } from 'src/services/lists'
+import { useRouter } from 'vue-router'
 
 const loading = ref(false)
 // const users = ref([])
 const lists = ref([])
 const newList = ref('')
 const modList = ref('')
+const router = useRouter()
+
+const redirectToTasks = (getId) => {
+  router.push({ name: 'tasks', params: { id: getId } })
+}
 
 const addnewList = async () => {
   const listForm = { title: newList.value }
@@ -145,13 +149,15 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-areas: 'left right';
-  column-gap: 60px;
   border-radius: 30px;
+  column-gap: 0px;
+  margin-bottom: 0px
 }
 
 .right-block {
   grid-area: right;
-  align-content: center;
+  text-align: center;
+  align-items: center;
   background-color: white;
   border-radius: 10px;
 }
@@ -159,7 +165,8 @@ onMounted(async () => {
 .left-block {
   grid-area: left;
   background-color: lightgrey;
-  width: 100%;
+  max-width: 50%;
+  min-width: 270px;
   height: 2000px;
   padding: 35px;
 }

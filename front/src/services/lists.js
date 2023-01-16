@@ -4,6 +4,10 @@ export const getAllLists = () => {
   return api.get('/lists')
 }
 
+export const getOneList = (id) => {
+  return api.get(`/lists/${id}`)
+}
+
 export function addList (params) {
   return api.post('/lists', params)
 }

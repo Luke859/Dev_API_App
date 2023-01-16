@@ -2,25 +2,35 @@
 <template>
     <q-page class="flex">
         <div class="home">
-            <div class="right-block">
+            <div class="right-block" style="align-items: center; width: auto">
+                <div class="row" style="align-items: center ">
+                    <q-btn color="grey" style="border: black 1px solid" round flat icon="arrow_back_ios_new" to="/Dashboard" >
+                    </q-btn>
+                    <div class="text-h2" style="padding-left: 20px" >{{ oneList.title }}</div>
+                </div>
+                <q-btn style="border: black 1px solid" color="purple" icon="add" label="Ajouter une tâche">
+                    <q-menu>
+                        <q-item clickable>
+                            <form className="form" @submit.prevent="addnewTask(route.params.id)">
+                                <q-input v-model="newTask" clearable filled label="Add" />
+                                <q-btn type="submit" class="btn btn-block"> Add new task </q-btn>
+                            </form>
+                        </q-item>
+                    </q-menu>
+                </q-btn>
                 <div v-if="loading">
                     <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" />
                 </div>
                 <div v-else>
                     <table style="width:100%">
                         <div class="cursor-pointer">
-                            <q-btn color="grey" style="border: black 1px solid" round flat icon="arrow_back_ios_new" to="/Dashboard" >
-                            </q-btn>
-                            <!-- <div v-for="list_all in lists" :key="list_all._id">
-                                <div class="text-h6">{{ list_all.title }}</div>
-                            </div> -->
                             <div v-for="tasks_all in tasks" :key="tasks_all._id">
                                 <q-card flat bordered class="my-card bg-grey-1">
                                     <q-card-section class="bg-lightgrey">
                                         <div class="row items-center no-wrap">
                                             <div class="col">
                                                 <!-- <div class="text-h6">{{ list_all._id }}</div> -->
-                                                <div class="text-h6">{{ tasks_all.taskName }}</div>
+                                                <div class="text-h6">{{ tasks_all.title }}</div>
                                                 <!-- <div class="text-subtitle2"></div> -->
                                             </div>
 
@@ -56,11 +66,6 @@
                                             </div>
                                         </div>
                                     </q-card-section>
-                                    <q-card-section class="bg-white" align="left">
-                                        <q-btn color="purple">
-                                            Voir ma liste
-                                        </q-btn>
-                                    </q-card-section>
                                 </q-card>
                             </div>
                         </div>
@@ -72,8 +77,8 @@
                     <q-btn style="border: black 1px solid" color="grey-7" round flat icon="add">
                         <q-menu>
                             <q-item clickable>
-                                <form className="form" @submit.prevent="addnewTask">
-                                    <q-input v-model="newTask" clearable filled label="Add" />
+                                <form className="form" @submit.prevent="addnewList">
+                                    <q-input v-model="newList" clearable filled label="Add" />
                                     <q-btn type="submit" class="btn btn-block"> Add new list </q-btn>
                                 </form>
                             </q-item>
@@ -86,9 +91,9 @@
                 <div v-else>
                     <table style="width:100%">
                         <div class="cursor-pointer">
-                            <tr v-for="tasks_all in tasks" :key="tasks_all._id">
-                                <td>{{ tasks_all.taskName }}</td>
-                            </tr>
+                        <tr v-for="list_all in lists" :key="list_all._id">
+                            <td>{{ list_all.title }}</td>
+                        </tr>
                         </div>
                     </table>
                 </div>
@@ -100,30 +105,48 @@
 import { ref, onMounted } from 'vue'
 // import { getUserProfile } from 'src/services/users'
 import { Notify } from 'quasar'
-import { getAllTasks, addTask, modifyTask, deleteTask } from 'src/services/tasks'
+import { getTasksByList, addTask, modifyTask, deleteTask } from 'src/services/tasks'
+import { useRoute } from 'vue-router'
+import { getAllLists, addList, getOneList } from 'src/services/lists'
 
+const route = useRoute()
 const loading = ref(false)
 // const users = ref([])
 const tasks = ref([])
 const newTask = ref('')
 const modTask = ref('')
+const lists = ref([])
+const oneList = ref('')
+const newList = ref('')
 
-const addnewTask = async () => {
-  const taskForm = { title: newTask.value }
+const addnewTask = async (getListId) => {
+  const taskForm = {
+    list: getListId,
+    title: newTask.value
+  }
   const response = await addTask(taskForm)
   window.location.reload()
   console.log(response)
 }
 
-const modifyCurrentTask = async (getId) => {
-  const modifyTaskForm = { title: modTask.value }
-  const response = await modifyTask(getId, modifyTaskForm)
+const modifyCurrentTask = async (getTaskId) => {
+  const modifyTaskForm = {
+    title: modTask.value
+  }
+  const response = await modifyTask(getTaskId, modifyTaskForm)
   window.location.reload()
   console.log(response)
 }
 
 const deleteCurrentTask = async (getId) => {
   const response = await deleteTask(getId)
+  window.location.reload()
+  console.log(response)
+}
+
+const addnewList = async () => {
+  const listForm = { title: newList.value }
+  const response = await addList(listForm)
   window.location.reload()
   console.log(response)
 }
@@ -141,8 +164,12 @@ onMounted(async () => {
   loading.value = true
   await asyncCall()
   try {
-    const res = await getAllTasks()
-    // console.log(res)
+    const resOneList = await getOneList(route.params.id)
+    oneList.value = resOneList.data
+    const resAllLists = await getAllLists()
+    lists.value = resAllLists.data
+    const getListId = route.params.id
+    const res = await getTasksByList(getListId)
     tasks.value = res.data
   } catch {
     Notify.create('Error on user load')
