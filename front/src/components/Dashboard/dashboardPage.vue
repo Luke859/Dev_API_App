@@ -3,21 +3,35 @@
   <q-page class="flex"  style="min-height: 100px">
     <div class="home">
       <div class="right-block">
-        <h1 style="padding: 70px 20px 20px 0px">Hello, bienvenue !</h1>
-        <h3 style="padding: 0px 20px 40px 0px">Voici les dernières tâches que tu as ajoutés</h3>
-        <div v-if="loading">
-          <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" />
+        <h1 style="padding: 70px 0px 0px 0px">Hello, bienvenue !</h1>
+        <div v-if="lists.length == 0" class="q-pa-md ">
+          <hr>
+          <h4 style="color: red; margin-top: 60px">Tu n’as aucune liste de tâches disponible !</h4>
+          <h4 style="margin-top: 60px">Pour en créer une, cliquez sur le bouton ci-dessous</h4>
+          <h4 style=" margin-top: 20px">ou en haut à gauche de la page</h4>
+          <div class="flex flex-center q-ma-xl">
+            <q-btn style="border: black 1px solid" color="purple" icon="add" label="Ajouter une liste">
+              <q-menu>
+                <q-item clickable>
+                  <form className="form" required="" @submit.prevent="addnewList">
+                    <q-input v-model="newList" clearable filled label="Add" />
+                    <q-btn type="submit" class="btn btn-block"> Add new list </q-btn>
+                  </form>
+                </q-item>
+              </q-menu>
+            </q-btn>
+          </div>
         </div>
         <div v-else>
-            <div class="q-pa-md row items-center q-gutter-md">
+          <hr>
+          <h3 style="margin-top: 60px">Voici les dernières tâches que tu as ajoutés</h3>
+            <div class="q-pa-md row items-center q-gutter-md" style="margin-top: 60px">
               <div v-for="list_all in lists" :key="list_all._id">
                 <q-card flat bordered class="my-card bg-grey-1" >
-                  <q-card-section class="bg-lightgrey">
+                  <q-card-section class="bg-grey-4">
                     <div class="row items-center no-wrap">
                       <div class="col">
-                        <!-- <div class="text-h6">{{ list_all._id }}</div> -->
-                        <div class="text-h6">{{ list_all.title }}</div>
-                        <!-- <div class="text-subtitle2"></div> -->
+                        <div class="text-h3">{{ list_all.title }}</div>
                       </div>
 
                       <div class="col-auto">
@@ -34,19 +48,38 @@
                                     </q-item>
                                   </q-menu>
                                 </q-btn>
-                                <q-item-section>
-                                  <form className="form" @submit.prevent="deleteCurrentList(list_all._id)" >
-                                    <q-btn type="submit" class="btn btn-block">Supprimer</q-btn>
-                                  </form>
-                                </q-item-section>
+                                <q-btn>Supprimer
+                                  <q-menu>
+                                    <q-item>
+                                      <form className="form" @submit.prevent="deleteCurrentList(list_all._id)" >
+                                        <h4 class="text-h4" style="text-align: cente; padding: 20px">Supprimer la liste</h4>
+                                        <p class="text-h6" style="text-align: cente; padding: 20px">Vous êtes sur le point de supprimer votre liste, êtes vous sûr de vouloir faire ça ?</p>
+                                        <q-btn class="btn btn-block" label="Annuler" v-close-popup />
+                                        <q-btn type="submit" class="btn btn-block" style="color: red">Supprimer</q-btn>
+                                      </form>
+                                    </q-item>
+                                  </q-menu>
+                                </q-btn>
                             </q-list>
                           </q-menu>
                         </q-btn>
                       </div>
                     </div>
                   </q-card-section>
-                  <q-card-section class="bg-white" align="left">
-                    <q-btn color="purple" @click="redirectToTasks(list_all._id)" label="Voir tasks" class="q-mb-md" />
+                  <q-card-section class="bg-white" align="center" style="padding: 30px">
+                  <h4 align="left" style="padding-bottom: 20px">Task(s) :</h4>
+                    <div v-if="list_all.tasks && list_all.tasks.length > 0" >
+                      <div v-for="(task, index) in list_all.tasks" :key="index">
+                        <div align="left" class="text-h4 text-grey" >
+                          {{ task.title }}
+                          <hr>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else>
+                        <h4 class="text-h4 text-weight-light text-dark q-ma-lg text-accent">Cette liste ne contient aucune tâches ajoutez en une depuis la liste</h4 >
+                    </div>
+                    <q-btn color="purple" @click="redirectToTasks(list_all._id)" label="Voir ma liste" class="q-mb-md" />
                   </q-card-section>
                 </q-card>
               </div>
@@ -55,7 +88,7 @@
       </div>
       <div class="left-block">
         <h3>Mes listes
-          <q-btn style="border: black 1px solid" color="grey-7" round flat icon="add">
+          <q-btn style="border: black 1px solid" color="purple" icon="add" label="Add">
             <q-menu>
                 <q-item clickable>
                   <form className="form" required="" @submit.prevent="addnewList">
@@ -66,10 +99,12 @@
             </q-menu>
           </q-btn>
         </h3>
-        <div v-if="loading">
-          <q-circular-progress indeterminate rounded size="50px" color="lime" class="q-ma-md" />
+        <div v-if="lists.length == 0" class="q-pa-md ">
+          <hr>
+          <h4 class="text-h4 text-weight-thin text-dark q-ma-lg flex flex-center">Pas de liste disponible </h4>
         </div>
         <div v-else>
+          <hr>
           <table style="width:100%">
             <div class="cursor-pointer">
               <tr v-for="list_all in lists" :key="list_all._id">
@@ -160,13 +195,14 @@ onMounted(async () => {
   align-items: center;
   background-color: white;
   border-radius: 10px;
+  padding-right: 250px
 }
 
 .left-block {
   grid-area: left;
   background-color: lightgrey;
   max-width: 50%;
-  min-width: 270px;
+  min-width: 350px;
   height: 2000px;
   padding: 35px;
 }

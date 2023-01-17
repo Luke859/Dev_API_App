@@ -12,8 +12,8 @@
                     <q-menu>
                         <q-item clickable>
                             <form className="form" @submit.prevent="addnewTask(route.params.id)">
-                                <q-input v-model="newTask" clearable filled label="Task" style="margin-top: 5px"/>
-                                <q-input v-model="newDescriptionTask" clearable filled label="Decription" style="margin-top: 5px"/>
+                                <q-input v-model="newTask" clearable filled label="Task" style="margin-top: 5px" required=""/>
+                                <q-input v-model="newDescriptionTask" clearable filled label="Decription" style="margin-top: 5px" required=""/>
                                 <q-btn type="submit" class="btn btn-block" style="margin-top: 5px"> Add new task </q-btn>
                             </form>
                         </q-item>
@@ -25,58 +25,118 @@
                 <div v-else>
                     <div class="q-pa-md row items-center q-gutter-md">
                         <div class="cursor-pointer">
-                            <h1>Tâches - </h1>
+                            <h1>Tâches</h1>
+                            <!-- {{ tasks.length }}  -->
+                            <hr>
+                            <div v-for="tasks_all in tasks" :key="tasks_all._id">
+                                <div v-if="!tasks_all.done">
+                                    <q-card flat bordered class="my-card bg-grey-1" style="margin-top: 20px" >
+                                        <q-card-section class="bg-lightgrey">
+                                            <div class="row items-center no-wrap">
+                                                <div class="q-gutter-sm">
+                                                    <q-checkbox v-model="tasks_all.done" color="purple" @click="sendData(tasks_all._id, tasks_all)" />
+                                                </div>
+                                                <div class="col">
+                                                    <!-- <div class="text-h6">{{ list_all._id }}</div> -->
+                                                    <div class="text-h5" style="color: black">{{ tasks_all.title }}</div>
+                                                    <div class="text-h7" style="color: grey">{{ tasks_all.description }}</div>
+                                                </div>
+
+                                                <div class="col-auto">
+                                                    <q-btn color="grey-7" round flat icon="more_vert">
+                                                        <q-menu>
+                                                            <q-list dense style="min-width: 100px">
+                                                                <q-btn>Editer
+                                                                    <q-menu>
+                                                                        <q-item clickable>
+                                                                            <form className="form"
+                                                                                @submit.prevent="modifyCurrentTask(tasks_all._id)">
+                                                                                <q-input v-model="modTask" clearable filled
+                                                                                    label="Modify" />
+                                                                                <q-btn type="submit"
+                                                                                    class="btn btn-block">
+                                                                                    Modify task
+                                                                                </q-btn>
+                                                                            </form>
+                                                                        </q-item>
+                                                                    </q-menu>
+                                                                </q-btn>
+                                                                <q-btn>Supprimer
+                                                                    <q-menu>
+                                                                        <q-item>
+                                                                        <form className="form" @submit.prevent="deleteCurrentTask(tasks_all._id)" >
+                                                                            <h4 class="text-h4" style="text-align: cente; padding: 20px">Supprimer la liste</h4>
+                                                                            <p class="text-h6" style="text-align: cente; padding: 20px">Vous êtes sur le point de supprimer votre liste, êtes vous sûr de vouloir faire ça ?</p>
+                                                                            <q-btn class="btn btn-block" label="Annuler" v-close-popup />
+                                                                            <q-btn type="submit" class="btn btn-block" style="color: red">Supprimer</q-btn>
+                                                                        </form>
+                                                                        </q-item>
+                                                                    </q-menu>
+                                                                </q-btn>
+                                                            </q-list>
+                                                        </q-menu>
+                                                    </q-btn>
+                                                </div>
+                                            </div>
+                                        </q-card-section>
+                                    </q-card>
+                                </div>
+                            </div>
+                            <h1 style="padding-top: 30px">Tâches complétées</h1>
+                            <hr>
                             <div v-for="tasks_all in tasks" :key="tasks_all._id">
                                 <div v-if="tasks_all.done">
-                                    <h1>Tâches complétées - </h1>
-                                </div>
-                                <div v-else>
-                                </div>
-                                <q-card flat bordered class="my-card bg-grey-1" style="margin-top: 20px" >
-                                    <q-card-section class="bg-lightgrey">
-                                        <div class="row items-center no-wrap">
-                                            <div class="q-gutter-sm">
-                                                <q-checkbox v-model="tasks_all.done" color="purple" @click="sendData(tasks_all._id, tasks_all)" />
-                                            </div>
-                                            <div class="col">
-                                                <!-- <div class="text-h6">{{ list_all._id }}</div> -->
-                                                <div class="text-h5" style="color: black">{{ tasks_all.title }}</div>
-                                                <div class="text-h7" style="color: grey">{{ tasks_all.description }}</div>
-                                            </div>
+                                    <q-card flat bordered class="my-card bg-grey-1" style="margin-top: 20px" >
+                                        <q-card-section class="bg-lightgrey">
+                                            <div class="row items-center no-wrap">
+                                                <div class="q-gutter-sm">
+                                                    <q-checkbox v-model="tasks_all.done" color="purple" @click="sendData(tasks_all._id, tasks_all)" />
+                                                </div>
+                                                <div class="col">
+                                                    <!-- <div class="text-h6">{{ list_all._id }}</div> -->
+                                                    <div class="text-h5" style="color: black"><strike>{{ tasks_all.title }}</strike></div>
+                                                    <div class="text-h7" style="color: grey"><strike>{{ tasks_all.description }}</strike></div>
+                                                </div>
 
-                                            <div class="col-auto">
-                                                <q-btn color="grey-7" round flat icon="more_vert">
-                                                    <q-menu>
-                                                        <q-list dense style="min-width: 100px">
-                                                            <q-btn>Editer
-                                                                <q-menu>
-                                                                    <q-item clickable>
-                                                                        <form className="form"
-                                                                            @submit.prevent="modifyCurrentTask(tasks_all._id)">
-                                                                            <q-input v-model="modTask" clearable filled
-                                                                                label="Modify" />
-                                                                            <q-btn type="submit"
-                                                                                class="btn btn-block">
-                                                                                Modify task
-                                                                            </q-btn>
+                                                <div class="col-auto">
+                                                    <q-btn color="grey-7" round flat icon="more_vert">
+                                                        <q-menu>
+                                                            <q-list dense style="min-width: 100px">
+                                                                <q-btn>Editer
+                                                                    <q-menu>
+                                                                        <q-item clickable>
+                                                                            <form className="form"
+                                                                                @submit.prevent="modifyCurrentTask(tasks_all._id)">
+                                                                                <q-input v-model="modTask" clearable filled
+                                                                                    label="Modify" />
+                                                                                <q-btn type="submit"
+                                                                                    class="btn btn-block">
+                                                                                    Modify task
+                                                                                </q-btn>
+                                                                            </form>
+                                                                        </q-item>
+                                                                    </q-menu>
+                                                                </q-btn>
+                                                                <q-btn>Supprimer
+                                                                    <q-menu>
+                                                                        <q-item>
+                                                                        <form className="form" @submit.prevent="deleteCurrentTask(tasks_all._id)" >
+                                                                            <h4 class="text-h4" style="text-align: cente; padding: 20px">Supprimer la liste</h4>
+                                                                            <p class="text-h6" style="text-align: cente; padding: 20px">Vous êtes sur le point de supprimer votre liste, êtes vous sûr de vouloir faire ça ?</p>
+                                                                            <q-btn class="btn btn-block" label="Annuler" v-close-popup />
+                                                                            <q-btn type="submit" class="btn btn-block" style="color: red">Supprimer</q-btn>
                                                                         </form>
-                                                                    </q-item>
-                                                                </q-menu>
-                                                            </q-btn>
-                                                            <q-item-section>
-                                                                <form className="form"
-                                                                    @submit.prevent="deleteCurrentTask(tasks_all._id)">
-                                                                    <q-btn type="submit" style="color: red"
-                                                                        class="btn btn-block">Supprimer</q-btn>
-                                                                </form>
-                                                            </q-item-section>
-                                                        </q-list>
-                                                    </q-menu>
-                                                </q-btn>
+                                                                        </q-item>
+                                                                    </q-menu>
+                                                                </q-btn>
+                                                            </q-list>
+                                                        </q-menu>
+                                                    </q-btn>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </q-card-section>
-                                </q-card>
+                                        </q-card-section>
+                                    </q-card>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -139,7 +199,6 @@ const sendData = async (getTaskId, tasksAll) => {
   const modifyCheckbox = {
     done: tasksAll.done
   }
-  console.log('HELLLO')
   const response = await modifyTask(getTaskId, modifyCheckbox)
   loadTask()
   console.log(response)
