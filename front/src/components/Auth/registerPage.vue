@@ -2,13 +2,13 @@
     <div class="q-pa-xl">
       <div class="flex flex-center column">
         <h1>Inscrivez-vous</h1>
-        <q-card>
+        <q-card style="margin-top: 20px">
             <q-card-section>
-                <q-input label="Email" type="email" outlined class="q-mb-md" v-model="form.email" />
-                <q-input label="Mot de passe" type="password" outlined class="q-mb-md" v-model="form.password" :rules="[ val => val.length >= 6 || 'Minimum 6 caractère']" />
+                <q-input required="" label="Email" type="email" outlined class="q-mb-md" v-model="form.email" />
+                <q-input required="" label="Mot de passe" type="password" outlined class="q-mb-md" v-model="form.password" :rules="[ val => val.length >= 6 || 'Minimum 6 caractère']" />
                 <q-checkbox label="terms and conditions" v-model="form.terms_and_conditions"/>
-                <q-btn label="S'incrire" class="full-width" color="primary" @click="handleRegister"/>
-                <p>Vous avez déjà un compte ? <Router-link to="/login">Connectez-vous</Router-link></p>
+                <q-btn style="margin-top: 20px" label="S'incrire" class="full-width" color="primary" @click="handleRegister"/>
+                <p style="margin-top: 20px" >Vous avez déjà un compte ? <Router-link to="/login">Connectez-vous</Router-link></p>
             </q-card-section>
         </q-card>
       </div>

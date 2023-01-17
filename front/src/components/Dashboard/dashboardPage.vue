@@ -13,8 +13,8 @@
             <q-btn style="border: black 1px solid" color="purple" icon="add" label="Ajouter une liste">
               <q-menu>
                 <q-item clickable>
-                  <form className="form" required="" @submit.prevent="addnewList">
-                    <q-input v-model="newList" clearable filled label="Add" />
+                  <form className="form" @submit.prevent="addnewList">
+                    <q-input v-model="newList" required="" clearable filled label="Add"/>
                     <q-btn type="submit" class="btn btn-block"> Add new list </q-btn>
                   </form>
                 </q-item>
@@ -91,8 +91,8 @@
           <q-btn style="border: black 1px solid" color="purple" icon="add" label="Add">
             <q-menu>
                 <q-item clickable>
-                  <form className="form" required="" @submit.prevent="addnewList">
-                    <q-input v-model="newList" clearable filled label="Add" />
+                  <form className="form" @submit.prevent="addnewList">
+                    <q-input v-model="newList" required="" clearable filled label="Add" />
                     <q-btn type="submit" class="btn btn-block"> Add new list </q-btn>
                   </form>
                 </q-item>
