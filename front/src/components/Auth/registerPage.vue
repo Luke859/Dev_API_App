@@ -32,7 +32,7 @@ const form = ref({
 const handleRegister = async () => {
   try {
     await userStore.handleRegister(form.value)
-    router.push({ name: 'dashboard' })
+    router.push({ name: 'login' })
   } catch (e) {
     Notify.create('Error during register')
   }
